@@ -138,4 +138,4 @@ def analyze(context=None, results=None):
 
     # Show the plot.
     # plt.gcf().set_size_inches(18, 8)
-    plt.show()
+    pl.show()
