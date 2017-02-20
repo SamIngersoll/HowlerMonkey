@@ -21,6 +21,7 @@ def handle_data(context, data):
     data_history = data.history(context.sym, context.fields, bar_count=2, frequency="1d")
     print(data_history)
     for s in context.fields:
+<<<<<<< HEAD
         prev_bar = data_history[s][-2]
         curr_bar = data_history[s][-1]
     context.tensorboard.log( 'price', data_history["price"][-1], context.get_datetime().date() )
@@ -81,6 +82,20 @@ def FLAGS_Init():
 
     FLAGS, unparsed = parser.parse_known_args()
     tf.app.run(main=main, argv=[sys.argv[0]] + unparsed)
+=======
+        prev_bar = price_history[s][-2]
+        curr_bar = price_history[s][-1]
+        #if curr_bar > prev_bar:
+            #order(s, context.order_target)    
+    context.tensorboard.log( 'price', \
+                              price_history["price"][-1], \
+                              context.get_datetime().date() )
+    context.tensorboard.log( 'delta_high', \
+                              (price_history["high"][-1]-\
+                                price_history["high"][-1]), \
+                              context.get_datetime().date() )
+    context.tensorboard.writer.flush()
+>>>>>>> b5618bb6b6b0eb19203e529b8602f3511cad8ea7
 
 def analyze( context, results ):
     context.tensorboard.writer.close()
