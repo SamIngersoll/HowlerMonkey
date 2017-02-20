@@ -1,9 +1,10 @@
 import tensorflow as tf
 from zipline.api import order, record, symbol, sid
-import tensorboard
+from tensorboard import Tensorboard
 
 
 def initialize(context):
+    context.tensorboard = Tensorboard()
     context.sym = symbol('AAPL')
     context.order_target = 10
     context.fields = ["price","open","close","high","low"]
@@ -16,12 +17,15 @@ def handle_data(context, data):
         curr_bar = price_history[s][-1]
         #if curr_bar > prev_bar:
             #order(s, context.order_target)    
+    context.tensorboard.log( 'price', \
+                              price_history["price"][-1], \
+                              context.get_datetime().date() )
+    context.tensorboard.log( 'delta_high', \
+                              (price_history["high"][-1]-\
+                                price_history["high"][-1]), \
+                              context.get_datetime().date() )
 
-    #tf.summary.scalar('today_price',tday_price) 
-
-
-#if __name__ == '__main__':
-#    pass
-
+def analyze( context, results ):
+    context.tensorboard.writer.close()
 
 
