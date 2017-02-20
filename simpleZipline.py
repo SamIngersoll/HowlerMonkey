@@ -24,6 +24,7 @@ def handle_data(context, data):
                               (price_history["high"][-1]-\
                                 price_history["high"][-1]), \
                               context.get_datetime().date() )
+    context.tensorboard.writer.flush()
 
 def analyze( context, results ):
     context.tensorboard.writer.close()
