@@ -1,4 +1,3 @@
-
 import tensorflow as tf
 from tensorboard import Tensorboard
 import argparse
@@ -93,7 +92,8 @@ def do_eval(sess, eval_correct, data_placeholder, labels_placeholder, data_set):
 
 def run_training():
   data_sets = input_data.read_data_sets(FLAGS.input_data_dir, FLAGS.fake_data)
-
+  data_rows = #read from file
+  data_columns = #read from file
   # Tell TensorFlow that the model will be built into the default Graph.
   with tf.Graph().as_default():
     # Generate placeholders for the data and labels.
@@ -101,7 +101,7 @@ def run_training():
         FLAGS.batch_size)
 
     # Build a Graph that computes predictions from the inference model.
-    logits = network.inference(data_placeholder,
+    logits = network.inference(data_placeholder, data_rows, data_columns,
                              FLAGS.hidden1,
                              FLAGS.hidden2)
 

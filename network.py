@@ -4,40 +4,36 @@ import tensorflow as tf
 # Up or down
 NUM_CLASSES = 2
 
-DATA_COLUMNS = 5
-DATA_DAYS = 5
-DATA_SIZE = DATA_COLUMNS * DATA_DAYS
-
-
-def inference(data, hidden1_units, hidden2_units):
-  # Hidden 1
-  with tf.name_scope('hidden1'):
-    weights = tf.Variable(
-        tf.truncated_normal([DATA_SIZE, hidden1_units],
+def inference(data, data_rows, data_columns, hidden1_units, hidden2_units):
+    DATA_SIZE = data_rows * data_columns
+    # Hidden 1
+    with tf.name_scope('hidden1'):
+        weights = tf.Variable(
+            tf.truncated_normal([DATA_SIZE, hidden1_units],
                             stddev=1.0 / math.sqrt(float(DATA_SIZE))),
         name='weights')
-    biases = tf.Variable(tf.zeros([hidden1_units]),
+        biases = tf.Variable(tf.zeros([hidden1_units]),
                          name='biases')
-    hidden1 = tf.nn.relu(tf.matmul(data, weights) + biases)
-  # Hidden 2
-  with tf.name_scope('hidden2'):
-    weights = tf.Variable(
+        hidden1 = tf.nn.relu(tf.matmul(data, weights) + biases)
+    # Hidden 2
+    with tf.name_scope('hidden2'):
+        weights = tf.Variable(
         tf.truncated_normal([hidden1_units, hidden2_units],
                             stddev=1.0 / math.sqrt(float(hidden1_units))),
         name='weights')
-    biases = tf.Variable(tf.zeros([hidden2_units]),
+        biases = tf.Variable(tf.zeros([hidden2_units]),
                          name='biases')
-    hidden2 = tf.nn.relu(tf.matmul(hidden1, weights) + biases)
-  # Linear
-  with tf.name_scope('softmax_linear'):
-    weights = tf.Variable(
+        hidden2 = tf.nn.relu(tf.matmul(hidden1, weights) + biases)
+    # Linear
+    with tf.name_scope('softmax_linear'):
+        weights = tf.Variable(
         tf.truncated_normal([hidden2_units, NUM_CLASSES],
                             stddev=1.0 / math.sqrt(float(hidden2_units))),
         name='weights')
-    biases = tf.Variable(tf.zeros([NUM_CLASSES]),
+        biases = tf.Variable(tf.zeros([NUM_CLASSES]),
                          name='biases')
-    logits = tf.matmul(hidden2, weights) + biases
-  return logits
+        logits = tf.matmul(hidden2, weights) + biases
+    return logits
 
 
 def loss(logits, labels):
