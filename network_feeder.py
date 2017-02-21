@@ -9,59 +9,60 @@ import network
 FLAGS = None
 input_data = None
 
-def FLAGS_Init(learning_rate, max_steps, hidden1, hidden2, batch_size, input_data_dir, log_dir):
-    parser = argparse.ArgumentParser()
-    parser.add_argument(
-      '--learning_rate',
-      type=float,
-      default=learning_rate,
-      help='Initial learning rate.'
-    )
-    parser.add_argument(
-      '--max_steps',
-      type=int,
-      default=max_steps,
-      help='Number of steps to run trainer.'
-    )
-    parser.add_argument(
-      '--hidden1',
-      type=int,
-      default=hidden1,
-      help='Number of units in hidden layer 1.'
-    )
-    parser.add_argument(
-      '--hidden2',
-      type=int,
-      default=hidden2,
-      help='Number of units in hidden layer 2.'
-    )
-    parser.add_argument(
-      '--batch_size',
-      type=int,
-      default=batch_size,
-      help='Batch size.  Must divide evenly into the dataset sizes.'
-    )
-    parser.add_argument(
-      '--input_data_dir',
-      type=str,
-      default=os.getcwd()+'/input_data',
-      help='Directory to put the input data.'
-    )
-    parser.add_argument(
-      '--log_dir',
-      type=str,
-      default=os.getcwd()+'/logs',
-      help='Directory to put the log data.'
-    )
-    parser.add_argument(
-      '--fake_data',
-      default=False,
-      help='If true, uses fake data for unit testing.',
-      action='store_true'
-    )
+class NetworkFeeder:
+    def __init__(learning_rate, max_steps, hidden1, hidden2, batch_size, input_data_dir, log_dir, fake_data=False):
+        parser = argparse.ArgumentParser()
+        parser.add_argument(
+            '--learning_rate',
+            type=float,
+            default=learning_rate,
+            help='Initial learning rate.'
+        )
+        parser.add_argument(
+          '--max_steps',
+          type=int,
+          default=max_steps,
+          help='Number of steps to run trainer.'
+        )
+        parser.add_argument(
+          '--hidden1',
+          type=int,
+          default=hidden1,
+          help='Number of units in hidden layer 1.'
+        )
+        parser.add_argument(
+          '--hidden2',
+          type=int,
+          default=hidden2,
+          help='Number of units in hidden layer 2.'
+        )
+        parser.add_argument(
+          '--batch_size',
+          type=int,
+          default=batch_size,
+          help='Batch size.  Must divide evenly into the dataset sizes.'
+        )
+        parser.add_argument(
+          '--input_data_dir',
+          type=str,
+          default=input_data_dir,
+          help='Directory to put the input data.'
+        )
+        parser.add_argument(
+          '--log_dir',
+          type=str,
+          default=log_dir,
+          help='Directory to put the log data.'
+        )
+        parser.add_argument(
+          '--fake_data',
+          default=fake_data,
+          help='If true, uses fake data for unit testing.',
+          action='store_true'
+        )
 
-    FLAGS, unparsed = parser.parse_known_args()
-    tf.app.run(main=main, argv=[sys.argv[0]] + unparsed)
+        FLAGS, unparsed = parser.parse_known_args()
+        tf.app.run(main=main, argv=[sys.argv[0]] + unparsed)
 
 def placeholder_inputs(batch_size):
   data_placeholder = tf.placeholder(tf.float32, shape=(batch_size, network.DATA_SIZE))
