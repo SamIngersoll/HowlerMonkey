@@ -9,7 +9,7 @@ DATA_DAYS = 5
 DATA_SIZE = DATA_COLUMNS * DATA_DAYS
 
 
-def inference(data, hidden1_units, hidden2_units): 
+def inference(data, hidden1_units, hidden2_units):
   # Hidden 1
   with tf.name_scope('hidden1'):
     weights = tf.Variable(
