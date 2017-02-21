@@ -4,6 +4,7 @@ import os.path
 import sys
 import time
 import network
+import numpy as np
 
 class NetworkFeeder:
     def __init__(self, learning_rate, max_steps, hidden1, hidden2, batch_size, input_data_dir, log_dir, data_rows, data_columns):
@@ -47,9 +48,8 @@ class NetworkFeeder:
 
 
     def run_training(self):
-        data_sets = input_data.read_data_sets(self.FLAGS.input_data_dir)
-        data_rows = self.FLAGS.data_rows
-        data_columns = self.FLAGS.data_columns
+        #need to sort out data_sets
+        data_train = tf.contrib.learn.datasets.base.load_csv_with_header(filename=self.FLAGS.input_data_dir+"/data_file.csv", target_dtype=np.int, features_dtype=np.float32)
         # Tell TensorFlow that the model will be built into the default Graph.
         with tf.Graph().as_default():
         # Generate placeholders for the data and labels.
@@ -57,7 +57,7 @@ class NetworkFeeder:
             self.FLAGS.batch_size)
 
         # Build a Graph that computes predictions from the inference model.
-        logits = network.inference(data_placeholder, data_rows, data_columns,
+        logits = network.inference(data_placeholder, self.FLAGS.data_rows, self.FLAGS.data_columns,
                                  self.FLAGS.hidden1,
                                  self.FLAGS.hidden2)
 
@@ -129,13 +129,6 @@ class NetworkFeeder:
                     data_placeholder,
                     labels_placeholder,
                     data_sets.train)
-            # Evaluate against the validation set.
-            print('Validation Data Eval:')
-            do_eval(sess,
-                    eval_correct,
-                    data_placeholder,
-                    labels_placeholder,
-                    data_sets.validation)
             # Evaluate against the test set.
             print('Test Data Eval:')
             do_eval(sess,
