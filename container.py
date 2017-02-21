@@ -8,7 +8,7 @@ from datetime import datetime, timedelta
 import pytz
 import os
 import time
-from network_feeder import NetworkFeeder
+from network_ import network
 from monsterurl import get_monster
 
 '''STOCKS = ['AAPL', 'AXP', 'BA', 'CAT', 'CSCO', 
