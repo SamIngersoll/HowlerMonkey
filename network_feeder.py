@@ -9,7 +9,7 @@ FLAGS = None
 input_data = None
 
 class NetworkFeeder:
-    def __init__(learning_rate, max_steps, hidden1, hidden2, batch_size, input_data_dir, log_dir, data_rows, data_columns):
+    def __init__( self, learning_rate, max_steps, hidden1, hidden2, batch_size, input_data_dir, log_dir, data_rows, data_columns):
         parser = argparse.ArgumentParser()
         parser.add_argument(
             '--learning_rate',
@@ -55,16 +55,21 @@ class NetworkFeeder:
         )
         parser.add_argument(
           '--data_rows',
+          type=int,
           default=data_rows,
           help='Row size.',
         )
         parser.add_argument(
           '--data_columns',
+          type=int,
           default=data_columns,
           help='Column Size.'
         )
+        print( "\n--------------------------------------" )
         FLAGS, unparsed = parser.parse_known_args()
-        tf.app.run(main=main, argv=[sys.argv[0]] + unparsed)
+        print( FLAGS )
+        print()
+        tf.app.run(main=func, argv=[sys.argv[0]] + unparsed)
 
 def placeholder_inputs(batch_size):
   data_placeholder = tf.placeholder(tf.float32, shape=(batch_size, network.DATA_SIZE))
@@ -192,7 +197,10 @@ def run_training():
                 data_sets.test)
 
 
-def main(_):
+def func(_):
+    print( "\nMAIN" )
+    print( FLAGS )
+    print()
     if tf.gfile.Exists(FLAGS.log_dir):
         tf.gfile.DeleteRecursively(FLAGS.log_dir)
     tf.gfile.MakeDirs(FLAGS.log_dir)
