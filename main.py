@@ -3,4 +3,4 @@ from datetime import datetime, timedelta
 import time
 
 if __name__ == '__main__':
-    Container(learning_rate, max_steps, hidden1, hidden2, batch_size, input_data_dir, log_dir, stocks, start, end, liveday, generation_number)
+    Container(learning_rate = 0.2, max_steps = 10, hidden1 = 10, hidden2 = 20, batch_size = 100, generation_number=0)

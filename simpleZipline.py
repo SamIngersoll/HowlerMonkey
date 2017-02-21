@@ -8,6 +8,8 @@ from datetime import datetime, timedelta
 import pytz
 import os
 import time
+from network_feeder import NetworkFeeder
+from monsterurl import get_monster
 
 '''STOCKS = ['AAPL', 'AXP', 'BA', 'CAT', 'CSCO', 
           'CVX', 'DD', 'DIS', 'GE', 'GS', 'HD', 
@@ -53,25 +55,33 @@ def handle_data( algo, data):
 def analyze( algo, results ):
     algo.filewriter.writer.close()
 
-if __name__ == '__main__':
-    STOCKS = ['AAPL','CAT','NVDA']
-    start = datetime(2011, 1, 1, 0, 0, 0, 0, pytz.utc)
-    end = datetime(2016, 1, 1, 0, 0, 0, 0, pytz.utc)
+class Container:
+    def __init__( learning_rate, max_steps, hidden1, hidden2, batch_size, input_data_dir, log_dir=None, stocks=['AAPL','CAT','NVDA'], start=datetime(2000,1,1,0,0,0,0,pytz.utc), end=datetime(2016,1,1,0,0,0,0,pytz.utc), liveday=datetime(2011,1,1,0,0,0,0,pytz.utc), individual_name=get_monster(), generation_numberi=0 ):
+    
+    self.log_dir = log_dir
+    self.input_data_dir = input_data_dir
+    self.individual_name = individual_name
+    self.generation_number = generation_number
+    self.STOCKS = stocks     # ['AAPL','CAT','NVDA']
+    self.start = start  # datetime(2011, 1, 1, 0, 0, 0, 0, pytz.utc)
+    self.end = end      # datetime(2016, 1, 1, 0, 0, 0, 0, pytz.utc)
+    
+    if self.log_dir is None:
+        self.log_dir = 
 
     # Load price data from yahoo.
-    data = load_bars_from_yahoo(stocks=STOCKS, indexes={}, start=loadstart, end=end, adjusted = True)
+    data = load_bars_from_yahoo(stocks=STOCKS, indexes={},\
+                                 start=loadstart, end=end, adjusted = True)
     data = data.dropna()
-    print( data )
-    for eps in [1.0, 1.25, 1.5]:
-        print( "HOLA"+'\n'+'\n' )
-        # Create and run the algorithm.
-        olmar = TradingAlgorithm(handle_data=handle_data,\
+    # Create and run the algorithm.
+    algorithm = TradingAlgorithm(handle_data=handle_data,\
                                  initialize=initialize) #,\
                                  #identifiers=STOCKS)
-        olmar.eps = eps
-        olmar.log_dir = os.getcwd()+'/logs/'+time.strftime('%d_%m_%Y-%H_%M_%S',time.gmtime())+' = %.2f' % eps
-        
-        print( olmar.log_dir )
-
-        results = olmar.run(data)
+    algorithm.start = start
+    algorithm.end = end
+    algorithm.liveday = liveday
+    algorithm.log_dir = os.getcwd()+'/logs/'+time.strftime('%d_%m_%Y-%H_%M_%S',time.gmtime())+' = %.2f' % eps
+    algorithm.networkFeeder = NetworkFeeder( learning_rate, max_steps, hidden1, hidden2, batch_size, input_data_dir, log_dir)
+    print( algorithm.log_dir )
+    results = algorithm.run(data)
 

@@ -9,7 +9,7 @@ FLAGS = None
 input_data = None
 
 class NetworkFeeder:
-    def __init__(learning_rate, max_steps, hidden1, hidden2, batch_size, input_data_dir, log_dir, fake_data=False):
+    def __init__(learning_rate, max_steps, hidden1, hidden2, batch_size, input_data_dir, log_dir, data_rows, data_columns):
         parser = argparse.ArgumentParser()
         parser.add_argument(
             '--learning_rate',
@@ -54,12 +54,15 @@ class NetworkFeeder:
           help='Directory to put the log data.'
         )
         parser.add_argument(
-          '--fake_data',
-          default=fake_data,
-          help='If true, uses fake data for unit testing.',
-          action='store_true'
+          '--data_rows',
+          default=data_rows,
+          help='Row size.',
         )
-
+        parser.add_argument(
+          '--data_columns',
+          default=data_columns,
+          help='Column Size.'
+        )
         FLAGS, unparsed = parser.parse_known_args()
         tf.app.run(main=main, argv=[sys.argv[0]] + unparsed)
 
@@ -92,8 +95,8 @@ def do_eval(sess, eval_correct, data_placeholder, labels_placeholder, data_set):
 
 def run_training():
   data_sets = input_data.read_data_sets(FLAGS.input_data_dir, FLAGS.fake_data)
-  data_rows = #read from file
-  data_columns = #read from file
+  data_rows = FLAGS.data_rows
+  data_columns = FLAGS.data_columns
   # Tell TensorFlow that the model will be built into the default Graph.
   with tf.Graph().as_default():
     # Generate placeholders for the data and labels.
