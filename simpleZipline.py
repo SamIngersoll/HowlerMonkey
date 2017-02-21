@@ -17,8 +17,6 @@ import time
 '''
 
 def initialize(algo ):
-    
-    #print( '\n\n\n'+', '.join(str(x) for x in STOCKS)+'\n\n')
     #print( "-------------Initialize-------------" )
     algo.stocks = symbols(*STOCKS)
     #print( algo.stocks[0])
@@ -29,21 +27,14 @@ def initialize(algo ):
             algo.filewriters.append( FileWriter(log_dir=algo.log_dir+STOCKS[i]) )
     else:
         algo.filewriter = None    
-    #algo.sym = symbol('AAPL')
-    #algo.order_target = 10
     algo.fields = ["price","open","close","high","low"]
-    #algo.stocks
 
 def handle_data( algo, data):
     algo.day += 1
     price_history = []
     if ( algo.day >= 3 ):
 
-        #price_history = data.history(algo.stocks, algo.fields, bar_count=2, frequency="1d")
         #print( "-------------Handle Data-------------" )
-        #print(type(symbol('AAPL')))
-        #print(price_history.major_xs(price_history.major_axis[0])[algo.fields[0]][algo.stocks[0]])
-        #for f in algo.fields:
         for i in range(len(algo.stocks)):
             price_history.append( data.history(algo.stocks[i], algo.fields,\
                                      bar_count=2, frequency="1d").values.tolist())
@@ -56,18 +47,8 @@ def handle_data( algo, data):
                                       price_history[i][1][0],\
                                       algo.get_datetime().date() )
             algo.filewriters[i].writer.flush()
-        prev_bar = list(price_history[i][0] for i in range(len(price_history)))
-        curr_bar = list(price_history[i][0] for i in range(len(price_history)))
-                #if curr_bar > prev_bar:
-                #order(s, algo.order_target)    
-        #algo.filewriter.log( 'price', \
-        #                      price_history["price"][0], \
-        #                      algo.get_datetime().date() )
-        #algo.filewriter.log( 'change', \
-        #                      (price_history["close"][-1]-\
-        #                        price_history["open"][-1]), \
-        #                        algo.get_datetime().date() )
-        #algo.filewriters[:].writer.flush()
+        #prev_bar = list(price_history[i][0] for i in range(len(price_history)))
+        #curr_bar = list(price_history[i][0] for i in range(len(price_history)))
 
 def analyze( algo, results ):
     algo.filewriter.writer.close()
@@ -75,7 +56,6 @@ def analyze( algo, results ):
 if __name__ == '__main__':
     STOCKS = ['AAPL','CAT','NVDA']
     start = datetime(2011, 1, 1, 0, 0, 0, 0, pytz.utc)
-    loadstart = start - timedelta(days=6)
     end = datetime(2016, 1, 1, 0, 0, 0, 0, pytz.utc)
 
     # Load price data from yahoo.
@@ -91,7 +71,6 @@ if __name__ == '__main__':
         olmar.eps = eps
         olmar.log_dir = os.getcwd()+'/logs/'+time.strftime('%d_%m_%Y-%H_%M_%S',time.gmtime())+' = %.2f' % eps
         
-        # print '-'*100
         print( olmar.log_dir )
 
         results = olmar.run(data)

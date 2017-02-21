@@ -12,6 +12,9 @@ class FileWriter:
                                              max_queue=max_queue,
                                              flush_secs=flush_secs,
                                              graph_def=None)
+
+# To run tensorboard: tensorboard --logdir=path.
+
     def log( self, name, value, datetime ):
         epoch = datetime.toordinal()
         summary = tf.Summary()
