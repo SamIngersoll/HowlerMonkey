@@ -56,32 +56,33 @@ def analyze( algo, results ):
     algo.filewriter.writer.close()
 
 class Container:
-    def __init__( learning_rate, max_steps, hidden1, hidden2, batch_size, input_data_dir, log_dir=None, stocks=['AAPL','CAT','NVDA'], start=datetime(2000,1,1,0,0,0,0,pytz.utc), end=datetime(2016,1,1,0,0,0,0,pytz.utc), liveday=datetime(2011,1,1,0,0,0,0,pytz.utc), individual_name=get_monster(), generation_numberi=0 ):
+    def __init__( learning_rate, max_steps, hidden1, hidden2, batch_size, input_data_dir, log_dir=None, stocks=['AAPL','CAT','NVDA'], start=datetime(2000,1,1,0,0,0,0,pytz.utc), end=datetime(2016,1,1,0,0,0,0,pytz.utc), liveday=datetime(2011,1,1,0,0,0,0,pytz.utc), individual_name=get_monster(), generation_number=0 ):
     
-    self.log_dir = log_dir
-    self.input_data_dir = input_data_dir
-    self.individual_name = individual_name
-    self.generation_number = generation_number
-    self.STOCKS = stocks     # ['AAPL','CAT','NVDA']
-    self.start = start  # datetime(2011, 1, 1, 0, 0, 0, 0, pytz.utc)
-    self.end = end      # datetime(2016, 1, 1, 0, 0, 0, 0, pytz.utc)
+        self.log_dir = log_dir
+        self.input_data_dir = input_data_dir
+        self.individual_name = individual_name
+        self.generation_number = generation_number
+        self.STOCKS = stocks     # ['AAPL','CAT','NVDA']
+        self.start = start  # datetime(2011, 1, 1, 0, 0, 0, 0, pytz.utc)
+        self.end = end      # datetime(2016, 1, 1, 0, 0, 0, 0, pytz.utc)
     
-    if self.log_dir is None:
-        self.log_dir = 
-
-    # Load price data from yahoo.
-    data = load_bars_from_yahoo(stocks=STOCKS, indexes={},\
+        if self.log_dir is None:
+            self.log_dir = os.getcwd()+"/logs/"+time.strftime('%d_%m_%Y-%H_%M_%S',time.gmtime())+"/"+self.generation_number+"/"+self.individual_name
+        if self.input_data_dir is None:
+            self.input_data_dir = log_dir
+        # Load price data from yahoo.
+        data = load_bars_from_yahoo(stocks=STOCKS, indexes={},\
                                  start=loadstart, end=end, adjusted = True)
-    data = data.dropna()
-    # Create and run the algorithm.
-    algorithm = TradingAlgorithm(handle_data=handle_data,\
+        data = data.dropna()
+        # Create and run the algorithm.
+        algorithm = TradingAlgorithm(handle_data=handle_data,\
                                  initialize=initialize) #,\
                                  #identifiers=STOCKS)
-    algorithm.start = start
-    algorithm.end = end
-    algorithm.liveday = liveday
-    algorithm.log_dir = os.getcwd()+'/logs/'+time.strftime('%d_%m_%Y-%H_%M_%S',time.gmtime())+' = %.2f' % eps
-    algorithm.networkFeeder = NetworkFeeder( learning_rate, max_steps, hidden1, hidden2, batch_size, input_data_dir, log_dir)
-    print( algorithm.log_dir )
-    results = algorithm.run(data)
+        algorithm.start = start
+        algorithm.end = end
+        algorithm.liveday = liveday
+        algorithm.log_dir = log_dir # os.getcwd()+'/logs/'+time.strftime('%d_%m_%Y-%H_%M_%S',time.gmtime())+' = %.2f' % eps
+        algorithm.networkFeeder = NetworkFeeder( learning_rate, max_steps, hidden1, hidden2, batch_size, self.input_data_dir, self.log_dir)
+        print( self.log_dir )
+        results = algorithm.run(data)
 
