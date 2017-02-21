@@ -3,9 +3,10 @@ import datetime
 import os
 import time
 
-class Tensorboard:
-    def __init__( self, max_queue=10, flush_secs=12):
-        self.log_dir = os.getcwd()+"/logs/"+time.asctime()
+class FileWriter:
+    def __init__( self, log_dir, max_queue=10, flush_secs=12):
+        # self.log_dir = os.getcwd()+"/logs/"+time.asctime()
+        self.log_dir = log_dir
         self.merged = tf.summary.merge_all()
         self.writer = tf.summary.FileWriter(self.log_dir,
                                              max_queue=max_queue,
