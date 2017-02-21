@@ -1,13 +1,16 @@
 from container import Container
 from datetime import datetime, timedelta
 import time
+from zipline.api import order, record, symbol, symbols, sid
 
 # -GLOBAL VARS- #
 # List of n top performing individuals of all time
 mostFit = []
 
 if __name__ == '__main__':
-    container = Container(learning_rate = 0.2, max_steps = 10, hidden1 = 10, hidden2 = 20, batch_size = 100, lookback=4, generation_number=0)
+    for i in range( 45526 ):
+        print(  sid(i) )
+    # container = Container(learning_rate = 0.2, max_steps = 10, hidden1 = 10, hidden2 = 20, batch_size = 100, lookback=4, generation_number=0)
 
 # Creates a population of random individuals
 #   Called once at the beginning of time, and whenever we add new random individuals

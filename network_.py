@@ -43,6 +43,7 @@ class Network:
         return out_layer
 
     def next_batch( batch_size ):
+        pass
         # WRITE THIS SHITTTTTTT        
 
     def train( self ):
@@ -97,6 +98,6 @@ class Network:
             print("Accuracy:", accuracy.eval({self.x: mnist.test.images, self.y: mnist.test.labels}))
             sess.close()
 
-if __name__ == "__main__":
-    n = Network()
-    n.train()
+#if __name__ == "__main__":
+#    n = Network()
+#    n.train()

@@ -8,8 +8,9 @@ from datetime import datetime, timedelta
 import pytz
 import os
 import time
-from network_ import network
+from network_ import Network
 from monsterurl import get_monster
+import csv
 
 '''STOCKS = ['AAPL', 'AXP', 'BA', 'CAT', 'CSCO', 
           'CVX', 'DD', 'DIS', 'GE', 'GS', 'HD', 
@@ -18,18 +19,24 @@ from monsterurl import get_monster
           'TRV', 'UNH', 'UTX', 'V', 'VZ', 'WMT', 'XOM']
 '''
 
-def initialize(algo ):
+def initialize( algo ):
     #print( "-------------Initialize-------------" )
-    algo.stocks = symbols(*STOCKS)
-    #print( algo.stocks[0])
+    algo.stocks = symbols(*algo.stocks)
+    #print( algo.log_dir)
     algo.day = 0
     algo.filewriters = []
-    if algo.log_dir:
-        for i in range(len(algo.stocks)):
-            algo.filewriters.append( FileWriter(log_dir=algo.log_dir+STOCKS[i]) )
-    else:
-        algo.filewriter = None    
+    #if algo.log_dir:
+    for i in range(len(algo.stocks)):
+        algo.filewriters.append( FileWriter(log_dir=algo.log_dir+"/"+str(algo.stocks[i].symbol)) )
+    #else:
+    #    algo.filewriter = None    
     algo.fields = ["price","open","close","high","low"]
+    with open( algo.input_data_dir+"/data.csv", 'wb' ) as csvfile:
+        pass
+        #writer = csv.writer(csvfile)
+        #writer.writerows("HELLO") 
+    algo.network.train()    
+    
 
 def handle_data( algo, data):
     algo.day += 1
@@ -40,7 +47,6 @@ def handle_data( algo, data):
         for i in range(len(algo.stocks)):
             price_history.append( data.history(algo.stocks[i], algo.fields,\
                                      bar_count=2, frequency="1d").values.tolist())
- 
             algo.filewriters[i].log( 'price',\
                                       price_history[i][1][0],\
                                       algo.get_datetime().date() )
@@ -61,27 +67,31 @@ class Container:
         self.input_data_dir = input_data_dir
         self.individual_name = individual_name
         self.generation_number = generation_number
-        self.STOCKS = stocks     # ['AAPL','CAT','NVDA']
+        self.stocks = stocks     # ['AAPL','CAT','NVDA']
         self.start = start  # datetime(2011, 1, 1, 0, 0, 0, 0, pytz.utc)
         self.end = end      # datetime(2016, 1, 1, 0, 0, 0, 0, pytz.utc)
-    
+        self.classes = 2
         if self.log_dir is None:
             self.log_dir = os.getcwd()+"/logs/"+time.strftime('%d_%m_%Y-%H_%M_%S',time.gmtime())+"/"+str(self.generation_number)+"/"+self.individual_name
         if self.input_data_dir is None:
-            self.input_data_dir = log_dir
+            self.input_data_dir = self.log_dir
         # Load price data from yahoo.
-        data = load_bars_from_yahoo(stocks=self.STOCKS, indexes={},\
+        data = load_bars_from_yahoo(stocks=self.stocks, indexes={},\
                                  start=start, end=end, adjusted = True)
         data = data.dropna()
         # Create and run the algorithm.
         algorithm = TradingAlgorithm(handle_data=handle_data,\
                                  initialize=initialize) #,\
                                  #identifiers=STOCKS)
+        algorithm.stocks = self.stocks
         algorithm.start = start
         algorithm.end = end
         algorithm.liveday = liveday
-        algorithm.log_dir = log_dir # os.getcwd()+'/logs/'+time.strftime('%d_%m_%Y-%H_%M_%S',time.gmtime())+' = %.2f' % eps
-        algorithm.networkFeeder = NetworkFeeder( learning_rate, max_steps, hidden1, hidden2, batch_size, self.input_data_dir, self.log_dir, (liveday-start).days, len(self.STOCKS))
+        algorithm.input_data_dir = self.input_data_dir
+        algorithm.log_dir = self.log_dir # os.getcwd()+'/logs/'+time.strftime('%d_%m_%Y-%H_%M_%S',time.gmtime())+' = %.2f' % eps
+        #algorithm.network = Network( learning_rate, max_steps, hidden1, hidden2, batch_size, self.input_data_dir, self.log_dir, (liveday-start).days, len(self.stocks), self.classes)
+        algorithm.network = Network( max_steps = 3 )
         print( self.log_dir )
         results = algorithm.run(data)
+
 
