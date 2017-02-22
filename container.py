@@ -25,18 +25,18 @@ def initialize( algo ):
     #print( algo.log_dir)
     algo.day = 0
     algo.filewriters = []
+    algo.text_file_data = []
     #if algo.log_dir:
     for i in range(len(algo.stocks)):
         algo.filewriters.append( FileWriter(log_dir=algo.log_dir+"/"+str(algo.stocks[i].symbol)) )
     #else:
     #    algo.filewriter = None    
     algo.fields = ["price","open","close","high","low"]
-    with open( algo.input_data_dir+"/data.csv", 'wb' ) as csvfile:
-        pass
-        #writer = csv.writer(csvfile)
-        #writer.writerows("HELLO") 
-    algo.network.train()    
-    
+    algo.columns = len(algo.fields)
+    #algo.network.train()
+    for i in range(len(algo.stocks)):
+        for j in range(len(algo.fields)):    
+            algo.text_file_data.append(str(algo.stocks[i].symbol)+"_"+algo.fields[j])
 
 def handle_data( algo, data):
     algo.day += 1
@@ -55,11 +55,15 @@ def handle_data( algo, data):
                                       price_history[i][1][0],\
                                       algo.get_datetime().date() )
             algo.filewriters[i].writer.flush()
+        print(price_history)
         #prev_bar = list(price_history[i][0] for i in range(len(price_history)))
         #curr_bar = list(price_history[i][0] for i in range(len(price_history)))
 
 def analyze( algo, results ):
     algo.filewriter.writer.close()
+    with open(algo.input_data_dir+"/data.csv", 'w') as csvfile:
+        algo.writer = csv.writer(csvfile)
+        writer.writerows(algo.text_file_data)
 
 class Container:
     def __init__( self, learning_rate, max_steps, hidden1, hidden2, batch_size, lookback=2, input_data_dir=None, log_dir=None, stocks=['AAPL','CAT','NVDA'], start=datetime(2000,1,1,0,0,0,0,pytz.utc), end=datetime(2016,1,1,0,0,0,0,pytz.utc), liveday=datetime(2011,1,1,0,0,0,0,pytz.utc), individual_name=get_monster(), generation_number=0 ):
@@ -93,5 +97,3 @@ class Container:
         algorithm.network = Network( max_steps = 3 )
         print( self.log_dir )
         results = algorithm.run(data)
-
-
