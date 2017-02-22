@@ -8,7 +8,6 @@ import numpy as np
 
 class NetworkFeeder:
     def __init__(self, learning_rate, max_steps, hidden1, hidden2, batch_size, input_data_dir, log_dir, data_rows, data_columns):
-        #will need to do input data
         self.FLAGS = tf.app.flags.FLAGS
         tf.app.flags.DEFINE_float('learning_rate', learning_rate,"""Initial learning rate.""")
         tf.app.flags.DEFINE_integer('max_steps', max_steps,"""Number of steps to run trainer.""")
@@ -20,7 +19,7 @@ class NetworkFeeder:
         tf.app.flags.DEFINE_integer('data_rows', data_rows,"""Row Size.""")
         tf.app.flags.DEFINE_integer('data_columns', data_columns,"""Column Size.""")
         tf.app.flags.DEFINE_boolean('fake_data', False, 'If true, uses fake data ' 'for unit testing.')
-        tf.app.run(main=self.main)
+        # tf.app.run(main=self.main)
 
     def placeholder_inputs(self, batch_size):
         data_placeholder = tf.placeholder(tf.float32, shape=(batch_size, self.FLAGS.data_rows * self.FLAGS.data_columns))
@@ -50,9 +49,10 @@ class NetworkFeeder:
 
     def run_training(self):
 #        data_sets = input_data.read_data_sets(self.FLAGS.input_data_dir, self.FLAGS.fake_data)
-
         data_train = tf.contrib.learn.datasets.base.load_csv_with_header(filename=self.FLAGS.input_data_dir+"/data.csv", target_dtype=np.int, features_dtype=np.float32)
-
+        print("\n\n")
+        print(data_train)
+        print("\n\n")
         # Tell TensorFlow that the model will be built into the default Graph.
         with tf.Graph().as_default():
             # Generate placeholders for the data and labels.
@@ -84,10 +84,8 @@ class NetworkFeeder:
 
             # Create a session for running Ops on the Graph.
             sess = tf.Session()
-
             # Instantiate a SummaryWriter to output summaries and the Graph.
             summary_writer = tf.summary.FileWriter(self.FLAGS.log_dir, sess.graph)
-
             # And then after everything is built:
 
             # Run the Op to initialize the variables.
@@ -147,8 +145,10 @@ class NetworkFeeder:
                         data_sets.test)
 
     def main(self, _):
-        print("\n","\n",self.FLAGS.log_dir)
         if tf.gfile.Exists(self.FLAGS.log_dir):
             tf.gfile.DeleteRecursively(self.FLAGS.log_dir)
         tf.gfile.MakeDirs(self.FLAGS.log_dir)
         self.run_training()
+
+    def run(self):
+        tf.app.run(main=self.main)
