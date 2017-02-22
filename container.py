@@ -55,7 +55,7 @@ def handle_data( algo, data):
                                       price_history[i][1][0],\
                                       algo.get_datetime().date() )
             algo.filewriters[i].writer.flush()
-        print(price_history)
+        algo.text_file_data.append("\n"+price_history)
         #prev_bar = list(price_history[i][0] for i in range(len(price_history)))
         #curr_bar = list(price_history[i][0] for i in range(len(price_history)))
 
