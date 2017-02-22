@@ -5,12 +5,18 @@ import numpy as np
 import scipy
 
 # -GLOBAL VARS- #
+# Natural limits
+max_learn_rate = 1
+max_layer1_size = 100
+max_layer2_size = 100
+max_batch_size = 100
+max_lookback = 20
+
+
 # List of n top performing individuals of all time
 mostFit = []
 
 if __name__ == '__main__':
-    Y = np.nonzero( scipy.sparse.rand( 45526, 5, density=.0001 ).toarray())
-    print( Y )
     # container = Container(learning_rate = 0.2, max_steps = 10, hidden1 = 10, hidden2 = 20, batch_size = 100, lookback=4, generation_number=0)
   #  for i in range( 45526 ):
         #print(  sid(i) )
@@ -23,6 +29,11 @@ if __name__ == '__main__':
 #   Returns
 #       individuals: a list of new individuals of length num
 def populate( num ):
+    individuals = []
+    for i in range( num ):
+        fichrom = np.nonzero( scipy.sparse.rand( 45526, 5, density=.0001 ).toarray())
+        hyperchrom = np.random.rand( 5 ) 
+        individuals.append( Container( learning_rate=hyperchrom[0], max_steps=10, hidden1=100*hyperchrom[1], hidden2=100*hyperchrom[2], batch_size=int(max_batch_size*hyperchrom[3]), stocks=finchrom[0].tolist(), fields=finchrom[1].tolist() ))
     return individuals
 
 # Runs test to see how well individuals do
