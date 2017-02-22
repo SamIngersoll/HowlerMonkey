@@ -9,16 +9,12 @@ import scipy
 mostFit = []
 
 if __name__ == '__main__':
-<<<<<<< HEAD
-    X = np.ones(10, dtype=int)
     Y = np.nonzero( scipy.sparse.rand( 45526, 5, density=.0001 ).toarray())
     print( Y )
     # container = Container(learning_rate = 0.2, max_steps = 10, hidden1 = 10, hidden2 = 20, batch_size = 100, lookback=4, generation_number=0)
-=======
   #  for i in range( 45526 ):
         #print(  sid(i) )
     container = Container(learning_rate = 0.2, max_steps = 10, hidden1 = 10, hidden2 = 20, batch_size = 100, lookback=4, generation_number=0)
->>>>>>> bd17fe9293065bcb832e1164b1888f6eb807ffe0
 
 # Creates a population of random individuals
 #   Called once at the beginning of time, and whenever we add new random individuals
