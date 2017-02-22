@@ -87,7 +87,7 @@ class Container:
         # Load price data from yahoo.
         self.data = load_bars_from_yahoo(stocks=self.stocks, indexes={},\
                                  start=start, end=end, adjusted = True)
-        self.data = data.dropna()
+        self.data = self.data.dropna()
         # Create and run the algorithm.
         self.algorithm = TradingAlgorithm(handle_data=handle_data,\
                                  initialize=initialize) #,\

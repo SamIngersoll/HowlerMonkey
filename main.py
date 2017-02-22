@@ -16,11 +16,6 @@ max_lookback = 20
 # List of n top performing individuals of all time
 mostFit = []
 
-if __name__ == '__main__':
-    # container = Container(learning_rate = 0.2, max_steps = 10, hidden1 = 10, hidden2 = 20, batch_size = 100, lookback=4, generation_number=0)
-  #  for i in range( 45526 ):
-        #print(  sid(i) )
-    container = Container(learning_rate = 0.2, max_steps = 10, hidden1 = 10, hidden2 = 20, batch_size = 100, lookback=4, generation_number=0)
 
 # Creates a population of random individuals
 #   Called once at the beginning of time, and whenever we add new random individuals
@@ -31,9 +26,9 @@ if __name__ == '__main__':
 def populate( num ):
     individuals = []
     for i in range( num ):
-        fichrom = np.nonzero( scipy.sparse.rand( 45526, 5, density=.0001 ).toarray())
+        finchrom = np.nonzero( scipy.sparse.rand( 45526, 5, density=.0001 ).toarray())
         hyperchrom = np.random.rand( 5 ) 
-        individuals.append( Container( learning_rate=hyperchrom[0], max_steps=10, hidden1=100*hyperchrom[1], hidden2=100*hyperchrom[2], batch_size=int(max_batch_size*hyperchrom[3]), stocks=finchrom[0].tolist(), fields=finchrom[1].tolist() ))
+        individuals.append( Container( learning_rate=max_learn_rate*hyperchrom[0], max_steps=10, hidden1=int((max_layer1_size-1)*hyperchrom[1])+1, hidden2=int((max_layer2_size-1)*hyperchrom[2])+1, batch_size=int((max_batch_size-1)*hyperchrom[3])+1, stocks=finchrom[0].tolist(), fields=finchrom[1].tolist() ))
     return individuals
 
 # Runs test to see how well individuals do
@@ -75,4 +70,11 @@ def reproduce( remaining_individuals ):
 def mutuate( children, mutation_constant ):
     return mutated_children
 
+
+if __name__ == '__main__':
+    # container = Container(learning_rate = 0.2, max_steps = 10, hidden1 = 10, hidden2 = 20, batch_size = 100, lookback=4, generation_number=0)
+  #  for i in range( 45526 ):
+        #print(  sid(i) )
+    print( populate(1))
+    #container = Container(learning_rate = 0.2, max_steps = 10, hidden1 = 10, hidden2 = 20, batch_size = 100, lookback=4, generation_number=0)
 
