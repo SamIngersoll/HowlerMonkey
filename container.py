@@ -1,7 +1,7 @@
 import sys
 import tensorflow as tf
 from zipline.api import order, record, symbol, symbols, sid
-from filewriter import FileWriter
+from filewriter import FileWriter 
 from zipline.algorithm import TradingAlgorithm
 from zipline.utils.factory import load_from_yahoo, load_bars_from_yahoo
 from datetime import datetime, timedelta
@@ -12,15 +12,16 @@ from network_ import Network
 from monsterurl import get_monster
 import csv
 
-'''STOCKS = ['AAPL', 'AXP', 'BA', 'CAT', 'CSCO',
-          'CVX', 'DD', 'DIS', 'GE', 'GS', 'HD',
-          'IBM', 'INTC', 'JNJ', 'JPM', 'KO', 'MCD',
-          'MMM', 'MRK', 'MSFT', 'NKE', 'PFE', 'PG',
+'''STOCKS = ['AAPL', 'AXP', 'BA', 'CAT', 'CSCO', 
+          'CVX', 'DD', 'DIS', 'GE', 'GS', 'HD', 
+          'IBM', 'INTC', 'JNJ', 'JPM', 'KO', 'MCD', 
+          'MMM', 'MRK', 'MSFT', 'NKE', 'PFE', 'PG', 
           'TRV', 'UNH', 'UTX', 'V', 'VZ', 'WMT', 'XOM']
 '''
 
 def initialize( algo ):
     #print( "-------------Initialize-------------" )
+
     algo.stocks = symbols(*algo.stocks)
     #print( algo.log_dir)
     algo.day = 0
@@ -30,7 +31,7 @@ def initialize( algo ):
     for i in range(len(algo.stocks)):
         algo.filewriters.append( FileWriter(log_dir=algo.log_dir+"/"+str(algo.stocks[i].symbol)) )
     #else:
-    #    algo.filewriter = None
+    #    algo.filewriter = None    
     algo.fields = ["price","open","close","high","low"]
     algo.network.train()
     heading = []
@@ -60,10 +61,8 @@ def handle_data( algo, data):
         with open(algo.input_data_dir+"/data.csv", 'w') as csvfile:
             algo.writer = csv.writer(csvfile)
             algo.writer.writerows(algo.text_file_data)
-        NetworkFeeder(algo.learning_rate, algo.max_steps, algo.hidden1, algo.hidden2, algo.batch_size, algo.input_data_dir, algo.log_dir, (algo.liveday-algo.start).days, len(self.algo.stocks))
 
-
-
+    
 
 def analyze( algo, results ):
     algo.filewriter.writer.close()
@@ -78,6 +77,8 @@ class Container:
         self.individual_name = individual_name
         self.generation_number = generation_number
         self.stocks = stocks     # ['AAPL','CAT','NVDA']
+
+        print( type(self.stocks) )
         self.write_fields = fields
         self.start = start  # datetime(2011, 1, 1, 0, 0, 0, 0, pytz.utc)
         self.end = end      # datetime(2016, 1, 1, 0, 0, 0, 0, pytz.utc)
@@ -87,18 +88,16 @@ class Container:
         if self.input_data_dir is None:
             self.input_data_dir = self.log_dir
         # Load price data from yahoo.
-        self.data = load_bars_from_yahoo(stocks=self.stocks, indexes={},\
-                                 start=start, end=end, adjusted = True)
-        self.data = self.data.dropna()
+
         # Create and run the algorithm.
         self.algorithm = TradingAlgorithm(handle_data=handle_data,\
                                  initialize=initialize) #,\
                                  #identifiers=STOCKS)
-        self.algorithm.learning_rate = learning_rate
-        self.algorithm.max_steps = max_steps
-        self.algorithm.hidden1 = hidden1
-        self.algorithm.hidden2 = hidden2
-        self.algorithm.batch_size
+        if type( self.stocks[0] ) == int:
+            self.algorithm.stocks = []
+            for i in range(len(self.stocks)):
+                self.algorithm.stocks.append( self.algorithm.sid( self.stocks[i] )) 
+        print( self.algorithm.stocks )
         self.algorithm.stocks = self.stocks
         self.algorithm.write_fields = self.write_fields
         self.algorithm.start = start
@@ -109,5 +108,8 @@ class Container:
         #algorithm.network = Network( learning_rate, max_steps, hidden1, hidden2, batch_size, self.input_data_dir, self.log_dir, (liveday-start).days, len(self.stocks), self.classes)
         self.algorithm.network = Network( max_steps = 3 )
         print( self.log_dir )
+        self.data = load_bars_from_yahoo(stocks=self.stocks, indexes={},\
+                                 start=start, end=end, adjusted = True)
+        self.data = self.data.dropna()
     def run():
         results = self.algorithm.run(self.data)
