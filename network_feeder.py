@@ -6,9 +6,6 @@ import time
 import network
 import numpy as np
 
-from tensorflow.examples.tutorials.mnist import input_data
-from tensorflow.examples.tutorials.mnist import mnist
-
 class NetworkFeeder:
     def __init__(self, learning_rate, max_steps, hidden1, hidden2, batch_size, input_data_dir, log_dir, data_rows, data_columns):
         #will need to do input data
@@ -18,7 +15,7 @@ class NetworkFeeder:
         tf.app.flags.DEFINE_integer('hidden1', hidden1,"""Number of units in hidden layer 1.""")
         tf.app.flags.DEFINE_integer('hidden2', hidden2,"""Number of units in hidden layer 2.""")
         tf.app.flags.DEFINE_integer('batch_size', batch_size,"""Size of each batch.""")
-        tf.app.flags.DEFINE_string('input_data_dir', "/tmp/tensorflow/mnist/input_data","""Directory to the input data.""")
+        tf.app.flags.DEFINE_string('input_data_dir', input_data_dir,"""Directory to the input data.""")
         tf.app.flags.DEFINE_string('log_dir', log_dir,"""Directry to put the log.""")
         tf.app.flags.DEFINE_integer('data_rows', data_rows,"""Row Size.""")
         tf.app.flags.DEFINE_integer('data_columns', data_columns,"""Column Size.""")
@@ -52,9 +49,9 @@ class NetworkFeeder:
 
 
     def run_training(self):
-        data_sets = input_data.read_data_sets(self.FLAGS.input_data_dir, self.FLAGS.fake_data)
+#        data_sets = input_data.read_data_sets(self.FLAGS.input_data_dir, self.FLAGS.fake_data)
 
-#data_train = tf.contrib.learn.datasets.base.load_csv_with_header(filename=self.FLAGS.input_data_dir+"/data_file.csv", target_dtype=np.int, features_dtype=np.float32)
+        data_train = tf.contrib.learn.datasets.base.load_csv_with_header(filename=self.FLAGS.input_data_dir+"/data.csv", target_dtype=np.int, features_dtype=np.float32)
 
         # Tell TensorFlow that the model will be built into the default Graph.
         with tf.Graph().as_default():

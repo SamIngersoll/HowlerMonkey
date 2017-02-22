@@ -2,7 +2,7 @@ import math
 import tensorflow as tf
 
 # Up or down
-NUM_CLASSES = 10
+NUM_CLASSES = 2
 
 def inference(data, data_rows, data_columns, hidden1_units, hidden2_units):
     DATA_SIZE = data_rows * data_columns
