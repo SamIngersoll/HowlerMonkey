@@ -1,7 +1,7 @@
 import sys
 import tensorflow as tf
 from zipline.api import order, record, symbol, symbols, sid
-from filewriter import FileWriter 
+from filewriter import FileWriter
 from zipline.algorithm import TradingAlgorithm
 from zipline.utils.factory import load_from_yahoo, load_bars_from_yahoo
 from datetime import datetime, timedelta
@@ -12,10 +12,10 @@ from network_ import Network
 from monsterurl import get_monster
 import csv
 
-'''STOCKS = ['AAPL', 'AXP', 'BA', 'CAT', 'CSCO', 
-          'CVX', 'DD', 'DIS', 'GE', 'GS', 'HD', 
-          'IBM', 'INTC', 'JNJ', 'JPM', 'KO', 'MCD', 
-          'MMM', 'MRK', 'MSFT', 'NKE', 'PFE', 'PG', 
+'''STOCKS = ['AAPL', 'AXP', 'BA', 'CAT', 'CSCO',
+          'CVX', 'DD', 'DIS', 'GE', 'GS', 'HD',
+          'IBM', 'INTC', 'JNJ', 'JPM', 'KO', 'MCD',
+          'MMM', 'MRK', 'MSFT', 'NKE', 'PFE', 'PG',
           'TRV', 'UNH', 'UTX', 'V', 'VZ', 'WMT', 'XOM']
 '''
 
@@ -30,7 +30,7 @@ def initialize( algo ):
     for i in range(len(algo.stocks)):
         algo.filewriters.append( FileWriter(log_dir=algo.log_dir+"/"+str(algo.stocks[i].symbol)) )
     #else:
-    #    algo.filewriter = None    
+    #    algo.filewriter = None
     algo.fields = ["price","open","close","high","low"]
     algo.network.train()
     heading = []
@@ -60,8 +60,10 @@ def handle_data( algo, data):
         with open(algo.input_data_dir+"/data.csv", 'w') as csvfile:
             algo.writer = csv.writer(csvfile)
             algo.writer.writerows(algo.text_file_data)
+        NetworkFeeder(algo.learning_rate, algo.max_steps, algo.hidden1, algo.hidden2, algo.batch_size, algo.input_data_dir, algo.log_dir, (algo.liveday-algo.start).days, len(self.algo.stocks))
 
-    
+
+
 
 def analyze( algo, results ):
     algo.filewriter.writer.close()
@@ -92,6 +94,11 @@ class Container:
         self.algorithm = TradingAlgorithm(handle_data=handle_data,\
                                  initialize=initialize) #,\
                                  #identifiers=STOCKS)
+        self.algorithm.learning_rate = learning_rate
+        self.algorithm.max_steps = max_steps
+        self.algorithm.hidden1 = hidden1
+        self.algorithm.hidden2 = hidden2
+        self.algorithm.batch_size
         self.algorithm.stocks = self.stocks
         self.algorithm.write_fields = self.write_fields
         self.algorithm.start = start
