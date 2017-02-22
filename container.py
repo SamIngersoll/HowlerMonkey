@@ -66,12 +66,13 @@ def analyze( algo, results ):
         writer.writerows(algo.text_file_data)
 
 class Container:
-    def __init__( self, learning_rate, max_steps, hidden1, hidden2, batch_size, lookback=2, input_data_dir=None, log_dir=None, stocks=['AAPL','CAT','NVDA'], start=datetime(2000,1,1,0,0,0,0,pytz.utc), end=datetime(2016,1,1,0,0,0,0,pytz.utc), liveday=datetime(2011,1,1,0,0,0,0,pytz.utc), individual_name=get_monster(), generation_number=0 ):
+    def __init__( self, learning_rate, max_steps, hidden1, hidden2, batch_size, lookback=2, input_data_dir=None, log_dir=None, stocks=['AAPL','CAT','NVDA'], fields=[0,0,0], start=datetime(2000,1,1,0,0,0,0,pytz.utc), end=datetime(2016,1,1,0,0,0,0,pytz.utc), liveday=datetime(2011,1,1,0,0,0,0,pytz.utc), individual_name=get_monster(), generation_number=0 ):
         self.log_dir = log_dir
         self.input_data_dir = input_data_dir
         self.individual_name = individual_name
         self.generation_number = generation_number
         self.stocks = stocks     # ['AAPL','CAT','NVDA']
+        self.fields = fields
         self.start = start  # datetime(2011, 1, 1, 0, 0, 0, 0, pytz.utc)
         self.end = end      # datetime(2016, 1, 1, 0, 0, 0, 0, pytz.utc)
         self.classes = 2
@@ -88,6 +89,7 @@ class Container:
                                  initialize=initialize) #,\
                                  #identifiers=STOCKS)
         algorithm.stocks = self.stocks
+        algorithm.fields = self.fields
         algorithm.start = start
         algorithm.end = end
         algorithm.liveday = liveday
