@@ -1,15 +1,17 @@
 from container import Container
 from datetime import datetime, timedelta
 import time
-from zipline.api import order, record, symbol, symbols, sid
+import numpy as np
+import scipy
 
 # -GLOBAL VARS- #
 # List of n top performing individuals of all time
 mostFit = []
 
 if __name__ == '__main__':
-    for i in range( 45526 ):
-        print(  sid(i) )
+    X = np.ones(10, dtype=int)
+    Y = np.nonzero( scipy.sparse.rand( 45526, 5, density=.0001 ).toarray())
+    print( Y )
     # container = Container(learning_rate = 0.2, max_steps = 10, hidden1 = 10, hidden2 = 20, batch_size = 100, lookback=4, generation_number=0)
 
 # Creates a population of random individuals
