@@ -26,24 +26,30 @@ class NetworkFeeder:
         labels_placeholder = tf.placeholder(tf.int32, shape=(batch_size))
         return data_placeholder, labels_placeholder
 
-    def next_batch( self, batch_size,  ):
+    def next_batch( self, batch_size, data_pl, labels_pl ):
         data_feed = []
-        labels_feed = [] 
-        for i in range(int(len(self.data_train[0])/batch_size)):
-            print( i )
-            data_feed.append( self.data_train[0][i*batch_size:i*(batch_size+1)] )
-            labels_feed.append( self.data_train[1][i*batch_size:i*(batch_size+1)] ) 
-        print( data_feed ) 
-        print()
-        print( labels_feed )
-        return data_feed, labels_feed
+        labels_feed = []
+        feed_dict = []
+        for i in range(int(len(self.data_train[1])/batch_size)):
+            feed_dict.append( {
+                    data_pl: self.data_train[0][i*batch_size:(i+1)*batch_size],
+                    labels_pl: self.data_train[1][i*batch_size:(i+1)*batch_size]
+                }
+            )
+            print(np.shape(self.data_train[1][i*batch_size:(i+1)*batch_size]))
+         
+            # data_feed.append( self.data_train[0][i*batch_size:(i+1)*batch_size] )
+            # labels_feed.append( self.data_train[1][i*batch_size:(i+1)*batch_size] ) 
+        return feed_dict
+        # return data_feed, labels_feed
 
     def fill_feed_dict(self, data_pl, labels_pl):
-        data_feed, labels_feed = self.next_batch( self.FLAGS.batch_size)
+        '''data_feed, labels_feed = self.next_batch( self.FLAGS.batch_size)
         feed_dict = {
             data_pl: data_feed,
             labels_pl: labels_feed,
-        }
+        }'''
+        feed_dict = self.next_batch( self.FLAGS.batch_size, data_pl, labels_pl)
         return feed_dict
 
 
