@@ -33,7 +33,8 @@ class NetworkFeeder:
         for i in range(int(len(self.data_train[1])/batch_size)):
             data_feed.append(self.data_train[0][i*batch_size:(i+1)*batch_size])
             labels_feed.append(self.data_train[1][i*batch_size:(i+1)*batch_size])            
-
+        print( len(data_feed), len(data_feed[0]), len(data_feed[0][0]))
+        print( len(labels_feed), len(labels_feed[0]))
         feed_dict.append( {
             data_pl: data_feed,
             labels_pl: labels_feed
