@@ -26,9 +26,12 @@ class NetworkFeeder:
         labels_placeholder = tf.placeholder(tf.int32, shape=(batch_size))
         return data_placeholder, labels_placeholder
 
+    def next_batch( self, batch_size,  ):
+         
+        return data_feed, labels_feed
 
-    def fill_feed_dict(self, data_set, data_pl, labels_pl):
-        data_feed, labels_feed = data_set.next_batch(self.FLAGS.batch_size, self.FLAGS.fake_data)
+    def fill_feed_dict(self, data_pl, labels_pl):
+        data_feed, labels_feed = self.next_batch( self.FLAGS.batch_size)
         feed_dict = {
             data_pl: data_feed,
             labels_pl: labels_feed,
@@ -36,12 +39,12 @@ class NetworkFeeder:
         return feed_dict
 
 
-    def do_eval(self, sess, eval_correct, data_placeholder, labels_placeholder, data_set):
+    def do_eval(self, sess, eval_correct, data_placeholder, labels_placeholder):
         true_count = 0
-        steps_per_epoch = data_set.num_examples // self.FLAGS.batch_size
+        steps_per_epoch = self.data_train.num_examples // self.FLAGS.batch_size
         num_examples = steps_per_epoch * self.FLAGS.batch_size
         for step in range(steps_per_epoch):
-            feed_dict = self.fill_feed_dict(data_set, data_placeholder, labels_placeholder)
+            feed_dict = self.fill_feed_dict(data_placeholder, labels_placeholder)
             true_count += sess.run(eval_correct, feed_dict=feed_dict)
         precision = float(true_count) / num_examples
         print('  Num examples: %d  Num correct: %d  Precision @ 1: %0.04f' % (num_examples, true_count, precision))
@@ -49,9 +52,9 @@ class NetworkFeeder:
 
     def run_training(self):
 #       data_sets = input_data.read_data_sets(self.FLAGS.input_data_dir, self.FLAGS.fake_data)
-        data_train = tf.contrib.learn.datasets.base.load_csv_with_header(filename=self.FLAGS.input_data_dir+"/data.csv", target_dtype=np.int, features_dtype=np.float32)
+        self.data_train = tf.contrib.learn.datasets.base.load_csv_with_header(filename=self.FLAGS.input_data_dir+"/data.csv", target_dtype=np.int, features_dtype=np.float32)
         print("\n\n")
-        print(data_train)
+        print(self.data_train)
         print("\n\n")
         # Tell TensorFlow that the model will be built into the default Graph.
         with tf.Graph().as_default():
@@ -90,15 +93,14 @@ class NetworkFeeder:
 
             # Run the Op to initialize the variables.
             sess.run(init)
-
+            feed_dict = self.fill_feed_dict( data_placeholder, labels_placeholder)
             # Start the training loop.
             for step in range(self.FLAGS.max_steps):
               start_time = time.time()
 
               # Fill dictionary
-              feed_dict = self.fill_feed_dict(data_train,
-                                         data_placeholder,
-                                         labels_placeholder)
+              # feed_dict = self.fill_feed_dict(data_placeholder,
+              #                                  labels_placeholder)
 
               # Run one step of the model.  The return values are the activations
               # from the `train_op` (which is discarded) and the `loss` Op.  To
@@ -106,7 +108,7 @@ class NetworkFeeder:
               # in the list passed to sess.run() and the value tensors will be
               # returned in the tuple from the call.
               _, loss_value = sess.run([train_op, loss],
-                                       feed_dict=feed_dict)
+                                       feed_dict=feed_dict[step])
 
               duration = time.time() - start_time
 
@@ -115,7 +117,7 @@ class NetworkFeeder:
                 # Print status to stdout.
                 print('Step %d: loss = %.2f (%.3f sec)' % (step, loss_value, duration))
                 # Update the events file.
-                summary_str = sess.run(summary, feed_dict=feed_dict)
+                summary_str = sess.run(summary, feed_dict=feed_dict[step])
                 summary_writer.add_summary(summary_str, step)
                 summary_writer.flush()
 
@@ -128,8 +130,7 @@ class NetworkFeeder:
                 self.do_eval(sess,
                         eval_correct,
                         data_placeholder,
-                        labels_placeholder,
-                        data_train)
+                        labels_placeholder)
                 #print('Validation Data Eval:')
                 #self.do_eval(sess,
                 #        eval_correct,
