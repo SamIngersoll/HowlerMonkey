@@ -48,7 +48,7 @@ class NetworkFeeder:
 
 
     def run_training(self):
-#        data_sets = input_data.read_data_sets(self.FLAGS.input_data_dir, self.FLAGS.fake_data)
+#       data_sets = input_data.read_data_sets(self.FLAGS.input_data_dir, self.FLAGS.fake_data)
         data_train = tf.contrib.learn.datasets.base.load_csv_with_header(filename=self.FLAGS.input_data_dir+"/data.csv", target_dtype=np.int, features_dtype=np.float32)
         print("\n\n")
         print(data_train)
@@ -96,7 +96,7 @@ class NetworkFeeder:
               start_time = time.time()
 
               # Fill dictionary
-              feed_dict = self.fill_feed_dict(data_sets.train,
+              feed_dict = self.fill_feed_dict(data_train,
                                          data_placeholder,
                                          labels_placeholder)
 
@@ -129,20 +129,20 @@ class NetworkFeeder:
                         eval_correct,
                         data_placeholder,
                         labels_placeholder,
-                        data_sets.train)
-                print('Validation Data Eval:')
-                self.do_eval(sess,
-                        eval_correct,
-                        data_placeholder,
-                        labels_placeholder,
-                        data_sets.validation)
+                        data_train)
+                #print('Validation Data Eval:')
+                #self.do_eval(sess,
+                #        eval_correct,
+                #        data_placeholder,
+                #        labels_placeholder,
+                #        data_sets.validation)
                 # Evaluate against the test set.
-                print('Test Data Eval:')
-                self.do_eval(sess,
-                        eval_correct,
-                        data_placeholder,
-                        labels_placeholder,
-                        data_sets.test)
+                #print('Test Data Eval:')
+                #self.do_eval(sess,
+                #        eval_correct,
+                #        data_placeholder,
+                #        labels_placeholder,
+                #        data_sets.test)
 
     def main(self, _):
         if tf.gfile.Exists(self.FLAGS.log_dir):

@@ -27,7 +27,7 @@ def populate( num ):
     individuals = []
     for i in range( num ):
         finchrom = np.nonzero( scipy.sparse.rand( 45526, 5, density=.0001 ).toarray())
-        hyperchrom = np.random.rand( 5 )
+        hyperchrom = np.random.rand( 5 ) 
         individuals.append( Container( learning_rate=max_learn_rate*hyperchrom[0], max_steps=10, hidden1=int((max_layer1_size-1)*hyperchrom[1])+1, hidden2=int((max_layer2_size-1)*hyperchrom[2])+1, batch_size=int((max_batch_size-1)*hyperchrom[3])+1, stocks=finchrom[0].tolist(), fields=finchrom[1].tolist() ))
     return individuals
 
@@ -59,7 +59,7 @@ def select( individuals, fitness, cull_ammount ):
 #       children: List of new individuals for next generation
 def reproduce( remaining_individuals ):
     return children
-
+    
 # Introduces diversity into population, helps explore parameter space
 #   Called at the end of every generation
 #   Params
@@ -75,6 +75,6 @@ if __name__ == '__main__':
     # container = Container(learning_rate = 0.2, max_steps = 10, hidden1 = 10, hidden2 = 20, batch_size = 100, lookback=4, generation_number=0)
   #  for i in range( 45526 ):
         #print(  sid(i) )
-    # print( populate(1))
-    container = Container(learning_rate = 0.02, max_steps = 1000, hidden1 = 80, hidden2 = 20, batch_size = 100, lookback=4, generation_number=0)
-    container.run()
+    #print( populate(1))
+    container = Container(learning_rate = 0.2, max_steps = 10, hidden1 = 10, hidden2 = 20, batch_size = 100, lookback=4, generation_number=0)
+

@@ -108,6 +108,8 @@ class Container:
             self.algorithm.stocks = []
             for i in range(len(self.stocks)):
                 self.algorithm.stocks.append( self.algorithm.sid( self.stocks[i] )) 
+        else:
+            self.algorithm.stocks = self.stocks
         print( self.algorithm.stocks )
         self.learning_rate = learning_rate
         self.max_steps = max_steps
