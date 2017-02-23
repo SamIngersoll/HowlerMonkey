@@ -27,7 +27,15 @@ class NetworkFeeder:
         return data_placeholder, labels_placeholder
 
     def next_batch( self, batch_size,  ):
-         
+        data_feed = []
+        labels_feed = [] 
+        for i in range(int(len(self.data_train[0])/batch_size)):
+            print( i )
+            data_feed.append( self.data_train[0][i*batch_size:i*(batch_size+1)] )
+            labels_feed.append( self.data_train[1][i*batch_size:i*(batch_size+1)] ) 
+        print( data_feed ) 
+        print()
+        print( labels_feed )
         return data_feed, labels_feed
 
     def fill_feed_dict(self, data_pl, labels_pl):
