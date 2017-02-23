@@ -26,39 +26,32 @@ class NetworkFeeder:
         labels_placeholder = tf.placeholder(tf.int32, shape=(batch_size))
         return data_placeholder, labels_placeholder
 
-    def next_batch( self, batch_size, data_pl, labels_pl ):
+    def fill_feed_dict( self, batch_size, data_pl, labels_pl ):
         data_feed = []
         labels_feed = []
         feed_dict = []
         for i in range(int(len(self.data_train[1])/batch_size)):
-            feed_dict.append( {
-                    data_pl: self.data_train[0][i*batch_size:(i+1)*batch_size],
-                    labels_pl: self.data_train[1][i*batch_size:(i+1)*batch_size]
-                }
-            )
-            print(np.shape(self.data_train[1][i*batch_size:(i+1)*batch_size]))
+            data_feed.append(self.data_train[0][i*batch_size:(i+1)*batch_size])
+            labels_feed.append(self.data_train[1][i*batch_size:(i+1)*batch_size])            
+
+        feed_dict.append( {
+            data_pl: data_feed,
+            labels_pl: labels_feed
+            }
+        )    
+           # print(np.shape(self.data_train[1][i*batch_size:(i+1)*batch_size]))
          
             # data_feed.append( self.data_train[0][i*batch_size:(i+1)*batch_size] )
             # labels_feed.append( self.data_train[1][i*batch_size:(i+1)*batch_size] ) 
         return feed_dict
         # return data_feed, labels_feed
 
-    def fill_feed_dict(self, data_pl, labels_pl):
-        '''data_feed, labels_feed = self.next_batch( self.FLAGS.batch_size)
-        feed_dict = {
-            data_pl: data_feed,
-            labels_pl: labels_feed,
-        }'''
-        feed_dict = self.next_batch( self.FLAGS.batch_size, data_pl, labels_pl)
-        return feed_dict
-
-
     def do_eval(self, sess, eval_correct, data_placeholder, labels_placeholder):
         true_count = 0
         steps_per_epoch = self.data_train.num_examples // self.FLAGS.batch_size
         num_examples = steps_per_epoch * self.FLAGS.batch_size
         for step in range(steps_per_epoch):
-            feed_dict = self.fill_feed_dict(data_placeholder, labels_placeholder)
+            feed_dict = self.fill_feed_dict( self.FLAGS.batch_size, data_placeholder, labels_placeholder)
             true_count += sess.run(eval_correct, feed_dict=feed_dict)
         precision = float(true_count) / num_examples
         print('  Num examples: %d  Num correct: %d  Precision @ 1: %0.04f' % (num_examples, true_count, precision))
@@ -107,7 +100,7 @@ class NetworkFeeder:
 
             # Run the Op to initialize the variables.
             sess.run(init)
-            feed_dict = self.fill_feed_dict( data_placeholder, labels_placeholder)
+            feed_dict = self.fill_feed_dict( self.FLAGS.batch_size, data_placeholder, labels_placeholder)
             # Start the training loop.
             for step in range(self.FLAGS.max_steps):
               start_time = time.time()
@@ -121,6 +114,8 @@ class NetworkFeeder:
               # inspect the values of your Ops or variables, you may include them
               # in the list passed to sess.run() and the value tensors will be
               # returned in the tuple from the call.
+              print( type(feed_dict[0]))
+              print( len(feed_dict))
               _, loss_value = sess.run([train_op, loss],
                                        feed_dict=feed_dict[step])
 
