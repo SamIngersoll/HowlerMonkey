@@ -17,7 +17,6 @@ class Network:
         self.display_step = 1
         self.input_data_dir = input_data_dir 
 
-
         # Network Parameters
         self.n_hidden_1 = hidden1 # 1st layer number of features
         self.n_hidden_2 = hidden2  # 2nd layer number of features
@@ -45,17 +44,22 @@ class Network:
         out_layer = tf.matmul(layer_2, weights['out']) + biases['out']
         return out_layer
     
+    # Read the data from the csv
     def read_data( self, dir ):
         print( "reading data..." )
+        # List of lists that will hold data, [0] holds inputs, [1] holds labels
         self.training_data = [[],[]]
         with open(dir+"/data.csv", newline='') as csvfile:
             reader = csv.reader(csvfile) 
             for row in reader:
+                # Get first through second to last items from each line as floats
                 self.training_data[0].append(list(map(float, row[0:-1])))
+                # create label array, should be all 0 except correct answer, which is 1
                 labels = [0]*self.n_classes
                 labels[int(row[-1])] = 1
                 self.training_data[1].append(labels) 
 
+    # Divide data up into batches
     def make_batches( self, num_batches ):
         batch_inputs = [] 
         batch_labels = []
@@ -97,15 +101,15 @@ class Network:
         with tf.Session() as sess:
             print( "STARTING SESSION" )
             sess.run(init)
-
             # Training cycle
             for epoch in range(self.training_epochs):
                 avg_cost = 0.
                 num_batches = int(self.data_length/self.batch_size)
+                # Make batches
                 batch_inputs, batch_labels = self.make_batches( num_batches )
                 # Loop over all batches
                 for i in range(num_batches):
-                    # batch_x, batch_y = mnist.train.next_batch(self.batch_size)
+                    # Get inputs and labels for current batch
                     batch_x, batch_y = [batch_inputs[i], batch_labels[i]]
                     # Run optimization op (backprop) and cost op (to get loss value)
                     _, c = sess.run([optimizer, cost], feed_dict={self.x: batch_x,
