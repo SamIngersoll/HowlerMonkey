@@ -22,7 +22,7 @@ class NetworkFeeder:
         # tf.app.run(main=self.main)
 
     def placeholder_inputs(self, batch_size):
-        data_placeholder = tf.placeholder(tf.float32, shape=(batch_size, self.FLAGS.data_rows *  self.FLAGS.data_columns))
+        data_placeholder = tf.placeholder(tf.float32, shape=(batch_size, self.FLAGS.data_rows * self.FLAGS.data_columns))
         labels_placeholder = tf.placeholder(tf.int32, shape=(batch_size))
         return data_placeholder, labels_placeholder
 

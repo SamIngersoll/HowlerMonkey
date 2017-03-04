@@ -1,6 +1,7 @@
 
 from __future__ import print_function
-
+import random
+import csv
 # Import MNIST data
 from tensorflow.examples.tutorials.mnist import input_data
 mnist = input_data.read_data_sets("/tmp/data/", one_hot=True)
@@ -14,6 +15,8 @@ class Network:
         self.training_epochs = max_steps
         self.batch_size = batch_size
         self.display_step = 1
+        self.input_data_dir = input_data_dir 
+
 
         # Network Parameters
         self.n_hidden_1 = hidden1 # 1st layer number of features
@@ -41,12 +44,33 @@ class Network:
         # Output layer with linear activation
         out_layer = tf.matmul(layer_2, weights['out']) + biases['out']
         return out_layer
+    
+    def read_data( self, dir ):
+        print( "reading data..." )
+        self.training_data = [[],[]]
+        with open(dir+"/data.csv", newline='') as csvfile:
+            reader = csv.reader(csvfile) 
+            for row in reader:
+                self.training_data[0].append(list(map(float, row[0:-1])))
+                labels = [0]*self.n_classes
+                labels[int(row[-1])] = 1
+                self.training_data[1].append(labels) 
 
-    def next_batch( batch_size ):
-        pass
-        # WRITE THIS SHITTTTTTT        
+    def make_batches( self, num_batches ):
+        batch_inputs = [] 
+        batch_labels = []
+        # define random seed and shuffle both arrays, should shuffle same way because seed is the same
+        random.seed()
+        random.shuffle( self.training_data[0] )
+        random.shuffle( self.training_data[1] )
+        for i in range( num_batches ):
+                # make batches
+                batch_inputs.append( self.training_data[0][i*self.batch_size:(i+1)*self.batch_size] )
+                batch_labels.append( self.training_data[1][i*self.batch_size:(i+1)*self.batch_size])
+        return batch_inputs, batch_labels 
 
     def train( self ):
+        data = self.read_data( self.input_data_dir )
         # Store layers weight & bias
         self.weights = {
             'h1': tf.Variable(tf.random_normal([self.n_input, self.n_hidden_1])),
@@ -71,20 +95,23 @@ class Network:
 
         # Launch the graph
         with tf.Session() as sess:
+            print( "STARTING SESSION" )
             sess.run(init)
 
             # Training cycle
             for epoch in range(self.training_epochs):
                 avg_cost = 0.
-                total_batch = int(self.data_length/self.batch_size)
+                num_batches = int(self.data_length/self.batch_size)
+                batch_inputs, batch_labels = self.make_batches( num_batches )
                 # Loop over all batches
-                for i in range(total_batch):
-                    batch_x, batch_y = mnist.train.next_batch(self.batch_size)
+                for i in range(num_batches):
+                    # batch_x, batch_y = mnist.train.next_batch(self.batch_size)
+                    batch_x, batch_y = [batch_inputs[i], batch_labels[i]]
                     # Run optimization op (backprop) and cost op (to get loss value)
                     _, c = sess.run([optimizer, cost], feed_dict={self.x: batch_x,
                                                           self.y: batch_y})
                     # Compute average loss
-                    avg_cost += c / total_batch
+                    avg_cost += c / num_batches
                 # Display logs per epoch step
                 if epoch % self.display_step == 0:
                     print("Epoch:", '%04d' % (epoch+1), "cost=", \
@@ -95,7 +122,7 @@ class Network:
             correct_prediction = tf.equal(tf.argmax(pred, 1), tf.argmax(self.y, 1))
             # Calculate accuracy
             accuracy = tf.reduce_mean(tf.cast(correct_prediction, "float"))
-            print("Accuracy:", accuracy.eval({self.x: mnist.test.images, self.y: mnist.test.labels}))
+            print("Accuracy:", accuracy.eval({self.x: self.training_data[0], self.y: self.training_data[1]}))
             sess.close()
 
 #if __name__ == "__main__":

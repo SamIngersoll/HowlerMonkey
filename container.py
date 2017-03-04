@@ -42,7 +42,7 @@ def initialize( algo ):
     heading.append("Down")
     # for i in range(len(algo.stocks)):
     #         heading.append(str(algo.stocks[i].symbol)+"_"+algo.fields[algo.write_fields[i]])
-    algo.text_file_data.append(heading)
+    # algo.text_file_data.append(heading)
 
 def handle_data( algo, data):
     algo.day += 1
@@ -61,7 +61,15 @@ def handle_data( algo, data):
             #                          algo.get_datetime().date() )
             rows.append(price_history[i][algo.write_fields[i]])
             algo.filewriters[i].writer.flush()
-        rows.append(1)
+    
+        #!!!!!!!!!!!!!!!!!!
+        # Here I hardcoded the prediction of first stock algo.stocks[0], this should be an arg for constructor
+        #!!!!!!!!!!!!!!!!!!
+        upordown = data.history(algo.stocks[0], algo.fields[algo.write_fields[0]], bar_count=2, frequency="1d").values.tolist()
+        if ( upordown[0]-upordown[1] > 0 ):
+            rows.append(1)
+        else:
+            rows.append(0)
         algo.text_file_data.append(rows)
     if (algo.day == (algo.liveday-algo.start).days):
         with open(algo.input_data_dir+"/data.csv", 'w') as csvfile:
@@ -69,13 +77,12 @@ def handle_data( algo, data):
             algo.writer.writerows(algo.text_file_data)
 
     
-        with open(algo.input_data_dir+"/data.csv", 'w', newline='') as csvfile:
-            writer = csv.writer(csvfile)
-            writer.writerows(algo.text_file_data)
+        # with open(algo.input_data_dir+"/data.csv", 'w', newline='') as csvfile:
+        #    writer = csv.writer(csvfile)
+        #    writer.writerows(algo.text_file_data)
     if (algo.day == ((algo.liveday-algo.start).days)+500):
-        pass
-        # algo.network.train()
-        algo.networkywork.run()
+        algo.network.train()
+        #algo.networkywork.run()
 
 def analyze( algo, results ):
     algo.filewriter.writer.close()
@@ -123,9 +130,9 @@ class Container:
         self.algorithm.liveday = liveday
         self.algorithm.input_data_dir = self.input_data_dir
         self.algorithm.log_dir = self.log_dir # os.getcwd()+'/logs/'+time.strftime('%d_%m_%Y-%H_%M_%S',time.gmtime())+' = %.2f' % eps
-        # self.algorithm.network = Network( learning_rate, max_steps, hidden1, hidden2, batch_size, self.input_data_dir, self.log_dir, (liveday-start).days, len(self.stocks), self.classes)
+        self.algorithm.network = Network( learning_rate, max_steps, hidden1, hidden2, batch_size, self.input_data_dir, self.log_dir, (liveday-start).days, len(self.stocks), self.classes)
         #self.algorithm.network = Network( max_steps = 3 )
-        self.algorithm.networkywork = NetworkFeeder(self.learning_rate, self.max_steps, self.hidden1, self.hidden2, self.batch_size, self.input_data_dir, self.log_dir+"/tf", (self.liveday-self.start).days, len(self.stocks))
+        #self.algorithm.networkywork = NetworkFeeder(self.learning_rate, self.max_steps, self.hidden1, self.hidden2, self.batch_size, self.input_data_dir, self.log_dir+"/tf", (self.liveday-self.start).days, len(self.stocks))
         print( self.log_dir )
         self.data = load_bars_from_yahoo(stocks=self.stocks, indexes={},\
                                  start=start, end=end, adjusted = True)
