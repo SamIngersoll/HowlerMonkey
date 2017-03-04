@@ -99,7 +99,7 @@ class Network:
 
         # Launch the graph
         with tf.Session() as sess:
-            print( "STARTING SESSION" )
+            print( "starting session..." )
             sess.run(init)
             # Training cycle
             for epoch in range(self.training_epochs):
@@ -118,9 +118,16 @@ class Network:
                     avg_cost += c / num_batches
                 # Display logs per epoch step
                 if epoch % self.display_step == 0:
-                    print("Epoch:", '%04d' % (epoch+1), "cost=", \
-                        "{:.9f}".format(avg_cost))
-            print("Optimization Finished!")
+                    # Test model
+                    correct_prediction = tf.equal(tf.argmax(pred, 1), tf.argmax(self.y, 1))
+                    # Calculate accuracy
+                    accuracy = tf.reduce_mean(tf.cast(correct_prediction, "float"))
+                    print("Accuracy:", accuracy.eval({self.x: self.training_data[0], self.y: self.training_data[1]}))
+
+
+                    # print("Epoch:", '%04d' % (epoch+1), "cost=", \
+                    #    "{:.9f}".format(avg_cost))
+                    # print("Optimization Finished!")
 
             # Test model
             correct_prediction = tf.equal(tf.argmax(pred, 1), tf.argmax(self.y, 1))
