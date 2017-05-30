@@ -1,4 +1,11 @@
 
+'''
+Problems
+Labels wrong: for previous day to current day instead of current day to next day. We are predicting if stock has gone up rather than if it will go up
+Lookback not working
+
+'''
+
 from __future__ import print_function
 import random
 import csv
@@ -74,6 +81,7 @@ class Network:
         return batch_inputs, batch_labels 
 
     def train( self ):
+        print( "+---- Train ----+" )
         data = self.read_data( self.input_data_dir )
         # Store layers weight & bias
         self.weights = {

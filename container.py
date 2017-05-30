@@ -10,7 +10,6 @@ import os
 import time
 from network_ import Network
 from monsterurl import get_monster
-from network_feeder import NetworkFeeder
 import csv
 
 '''STOCKS = ['AAPL', 'AXP', 'BA', 'CAT', 'CSCO', 
@@ -21,7 +20,7 @@ import csv
 '''
 
 def initialize( algo ):
-    #print( "-------------Initialize-------------" )
+    print( "+------------- Initialize -------------+" )
 
     algo.stocks = symbols(*algo.stocks)
     #print( algo.log_dir)
@@ -65,13 +64,18 @@ def handle_data( algo, data):
         #!!!!!!!!!!!!!!!!!!
         # Here I hardcoded the prediction of first stock algo.stocks[0], this should be an arg for constructor
         #!!!!!!!!!!!!!!!!!!
+        
+        algo.day += 1
         upordown = data.history(algo.stocks[0], algo.fields[algo.write_fields[0]], bar_count=2, frequency="1d").values.tolist()
         if ( upordown[0]-upordown[1] > 0 ):
-            rows.append(1)
-        else:
             rows.append(0)
+        else:
+            rows.append(1)
         algo.text_file_data.append(rows)
+        
+        algo.day -= 1
     if (algo.day == (algo.liveday-algo.start).days):
+        print("+--- write ---+" )
         with open(algo.input_data_dir+"/data.csv", 'w') as csvfile:
             algo.writer = csv.writer(csvfile)
             algo.writer.writerows(algo.text_file_data)
@@ -80,15 +84,15 @@ def handle_data( algo, data):
         # with open(algo.input_data_dir+"/data.csv", 'w', newline='') as csvfile:
         #    writer = csv.writer(csvfile)
         #    writer.writerows(algo.text_file_data)
-    if (algo.day == ((algo.liveday-algo.start).days)+500):
+    if (algo.day == ((algo.liveday-algo.start).days)+5):
+        print("+--- run network --+")
         algo.network.train()
-        #algo.networkywork.run()
 
 def analyze( algo, results ):
     algo.filewriter.writer.close()
 
 class Container:
-    def __init__( self, learning_rate, max_steps, hidden1, hidden2, batch_size, lookback=2, input_data_dir=None, log_dir=None, stocks=['AAPL','CAT','NVDA'], fields=[0,0,0], start=datetime(2010,1,1,0,0,0,0,pytz.utc), end=datetime(2016,1,1,0,0,0,0,pytz.utc), liveday=datetime(2011,1,1,0,0,0,0,pytz.utc), individual_name=get_monster(), generation_number=0 ):
+    def __init__( self, learning_rate, max_steps, hidden1, hidden2, batch_size, lookback=2, input_data_dir=None, log_dir=None, stocks=['AAPL','CAT','NVDA'], fields=[0,0,0], start=datetime(2000,1,1,0,0,0,0,pytz.utc), end=datetime(2016,1,1,0,0,0,0,pytz.utc), liveday=datetime(2011,1,1,0,0,0,0,pytz.utc), individual_name=get_monster(), generation_number=0 ):
         self.log_dir = log_dir
         self.input_data_dir = input_data_dir
         self.individual_name = individual_name
@@ -137,5 +141,11 @@ class Container:
         self.data = load_bars_from_yahoo(stocks=self.stocks, indexes={},\
                                  start=start, end=end, adjusted = True)
         self.data = self.data.dropna()
+        print( "+--- done ---+")
     def run(self):
+        print("+--- RUN ---+")
         results = self.algorithm.run(self.data)
+
+if __name__ == '__main__':    
+    container = Container( learning_rate = 0.002, max_steps = 100, hidden1 = 10, hidden2 = 20, batch_size = 100, lookback = 4, generation_number=0)
+    container.run()
